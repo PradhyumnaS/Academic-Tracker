@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import { Award, BookOpen, Calendar, LogOut, RefreshCw, Search, Settings, User, Users } from 'lucide-react';
+import { Award, BookOpen, Calendar, LogOut, RefreshCw, Search, User, Users } from 'lucide-react';
 import Link from 'next/link';
 
 // Firebase configuration

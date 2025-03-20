@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Award, BookOpen, Calendar, LogOut, Menu, User, Users } from 'lucide-react';
+import { ArrowRight, Award, BookOpen, Calendar, Menu, User, Users } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'next/navigation';

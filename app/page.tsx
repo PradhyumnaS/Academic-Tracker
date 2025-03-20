@@ -1,8 +1,49 @@
-import React from 'react';
+"use client";
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Award, BookOpen, Calendar, Menu, Users } from 'lucide-react';
+import { ArrowRight, Award, BookOpen, Calendar, LogOut, Menu, User, Users } from 'lucide-react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
 export default function Home() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/');
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   return (
     <main className="min-h-screen">
       {/* Navigation Bar */}
@@ -25,12 +66,39 @@ export default function Home() {
               <Link href="#" className="text-amber-800 hover:text-amber-600 transition-colors">
                 About
               </Link>
-              <Link 
-                href="/login" 
-                className="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-lg transition-colors"
-              >
-                Login
-              </Link>
+              
+              {loading ? (
+                <div className="w-24 h-10 bg-amber-100 rounded-lg animate-pulse"></div>
+              ) : user ? (
+                <div className="flex items-center space-x-3">
+                  <Link 
+                    href="/dashboard" 
+                    className="text-amber-800 hover:text-amber-600 transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  <div className="h-8 w-8 rounded-full bg-amber-200 flex items-center justify-center text-amber-800 overflow-hidden">
+                    {user?.photoURL ? (
+                      <img src={user.photoURL} alt="Profile" className="h-full w-full object-cover" />
+                    ) : (
+                      <User size={16} />
+                    )}
+                  </div>
+                  <button 
+                    onClick={handleLogout} 
+                    className="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-lg transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link 
+                  href="/login" 
+                  className="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-lg transition-colors"
+                >
+                  Login
+                </Link>
+              )}
             </div>
             
             {/* Mobile menu button */}
@@ -55,13 +123,23 @@ export default function Home() {
               Seamlessly organize and showcase your patents, publications, conferences, 
               and events in one beautiful platform.
             </p>
-            <Link 
-              href="/login" 
-              className="inline-flex items-center px-6 py-3 bg-amber-700 hover:bg-amber-800 text-white font-medium rounded-lg transition-colors group"
-            >
-              Get Started
-              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
-            </Link>
+            {user ? (
+              <Link 
+                href="/dashboard" 
+                className="inline-flex items-center px-6 py-3 bg-amber-700 hover:bg-amber-800 text-white font-medium rounded-lg transition-colors group"
+              >
+                Go to Dashboard
+                <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+              </Link>
+            ) : (
+              <Link 
+                href="/login" 
+                className="inline-flex items-center px-6 py-3 bg-amber-700 hover:bg-amber-800 text-white font-medium rounded-lg transition-colors group"
+              >
+                Get Started
+                <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+              </Link>
+            )}
           </div>
         </div>
         

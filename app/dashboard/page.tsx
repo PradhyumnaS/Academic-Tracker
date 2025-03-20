@@ -45,9 +45,6 @@ const Dashboard = () => {
         try {
           if (currentUser.email) {
             await fetchUserContributions(currentUser.email);
-            console.log('User data fetched successfully!');
-            console.log(currentUser.email);
-            console.log(currentUser);
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -69,9 +66,7 @@ const Dashboard = () => {
       
       if (docSnap.exists()) {
         setUserData(docSnap.data() as UserData);
-        console.log("User contributions:", docSnap.data());
       } else {
-        console.log("No contributions found for this user!");
         setUserData(null);
       }
     } catch (error) {
@@ -91,7 +86,7 @@ const Dashboard = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      router.push('/login');
+      router.push('/');
     } catch (error) {
       console.error("Error signing out:", error);
     }
@@ -226,93 +221,248 @@ const Dashboard = () => {
           )}
           
           {userData && activeTab === 'overview' && (
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Patents */}
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold text-amber-900">Patents</h2>
-                </div>
-                <div className="p-4 bg-amber-50 rounded-lg">
-                <p className="text-amber-900 whitespace-pre-line">
-                  {userData?.patents || "No patent information available"}
-                </p>
-                </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Patents */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-amber-900">Patents</h2>
               </div>
-              
-              {/* Publications */}
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold text-amber-900">Publications</h2>
-                </div>
-                <div className="p-4 bg-amber-50 rounded-lg">
-                <p className="text-amber-900 whitespace-pre-line">
-                  {userData?.publications || "No publication information available"}</p>
-                </div>
-              </div>
-              
-              {/* Conferences */}
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold text-amber-900">Conferences</h2>
-                </div>
-                <div className="p-4 bg-amber-50 rounded-lg">
-                <p className="text-amber-900 whitespace-pre-line">
-                  {userData?.conferences || "No conference information available"}</p>
-                </div>
-              </div>
-              
-              {/* Events */}
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold text-amber-900">Events</h2>
-                </div>
-                <div className="p-4 bg-amber-50 rounded-lg">
-                <p className="text-amber-900 whitespace-pre-line">
-                  {userData?.events || "No event information available"}</p>
-                </div>
+              <div className="p-4 bg-amber-50 rounded-lg">
+                {userData?.patents ? (
+                  <>
+                    <div className="space-y-2">
+                      {userData.patents
+                        .split(/\\n/)
+                        .filter(item => item.trim().length > 0)
+                        .slice(0, 3)
+                        .map((patent, index) => (
+                          <div key={index} className="p-3 bg-white rounded-lg shadow-sm border border-amber-100 mb-2">
+                            <p className="text-amber-900 text-sm">
+                              {patent.trim()}
+                            </p>
+                          </div>
+                        ))}
+                    </div>
+                    {userData.patents.split(/\\n/).filter(item => item.trim().length > 0).length > 3 && (
+                      <button 
+                        onClick={() => setActiveTab('patents')} 
+                        className="text-amber-600 hover:text-amber-800 text-sm mt-2 flex items-center"
+                      >
+                        View all patents ({userData.patents.split(/\\n/).filter(item => item.trim().length > 0).length - 3} more)
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-amber-900">No patent information available</p>
+                )}
               </div>
             </div>
-          )}
+            
+            {/* Publications */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-amber-900">Publications</h2>
+              </div>
+              <div className="p-4 bg-amber-50 rounded-lg">
+                {userData?.publications ? (
+                  <>
+                    <div className="space-y-2">
+                      {userData.publications
+                        .split(/\\n/)
+                        .filter(item => item.trim().length > 0)
+                        .slice(0, 3)
+                        .map((publication, index) => (
+                          <div key={index} className="p-3 bg-white rounded-lg shadow-sm border border-amber-100 mb-2">
+                            <p className="text-amber-900 text-sm">
+                              {publication.trim()}
+                            </p>
+                          </div>
+                        ))}
+                    </div>
+                    {userData.publications.split(/\\n/).filter(item => item.trim().length > 0).length > 3 && (
+                      <button 
+                        onClick={() => setActiveTab('publications')} 
+                        className="text-amber-600 hover:text-amber-800 text-sm mt-2 flex items-center"
+                      >
+                        View all publications ({userData.publications.split(/\\n/).filter(item => item.trim().length > 0).length - 3} more)
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-amber-900">No publication information available</p>
+                )}
+              </div>
+            </div>
+            
+            {/* Conferences */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-amber-900">Conferences</h2>
+              </div>
+              <div className="p-4 bg-amber-50 rounded-lg">
+                {userData?.conferences ? (
+                  <>
+                    <div className="space-y-2">
+                      {userData.conferences
+                        .split(/\\n/)
+                        .filter(item => item.trim().length > 0)
+                        .slice(0, 3)
+                        .map((conference, index) => (
+                          <div key={index} className="p-3 bg-white rounded-lg shadow-sm border border-amber-100 mb-2">
+                            <p className="text-amber-900 text-sm">
+                              {conference.trim()}
+                            </p>
+                          </div>
+                        ))}
+                    </div>
+                    {userData.conferences.split(/\\n/).filter(item => item.trim().length > 0).length > 3 && (
+                      <button 
+                        onClick={() => setActiveTab('conferences')} 
+                        className="text-amber-600 hover:text-amber-800 text-sm mt-2 flex items-center"
+                      >
+                        View all conferences ({userData.conferences.split(/\\n/).filter(item => item.trim().length > 0).length - 3} more)
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-amber-900">No conference information available</p>
+                )}
+              </div>
+            </div>
+            
+            {/* Events */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-amber-900">Events</h2>
+              </div>
+              <div className="p-4 bg-amber-50 rounded-lg">
+                {userData?.events ? (
+                  <>
+                    <div className="space-y-2">
+                      {userData.events
+                        .split(/\\n/)
+                        .filter(item => item.trim().length > 0)
+                        .slice(0, 3)
+                        .map((event, index) => (
+                          <div key={index} className="p-3 bg-white rounded-lg shadow-sm border border-amber-100 mb-2">
+                            <p className="text-amber-900 text-sm">
+                              {event.trim()}
+                            </p>
+                          </div>
+                        ))}
+                    </div>
+                    {userData.events.split(/\\n/).filter(item => item.trim().length > 0).length > 3 && (
+                      <button 
+                        onClick={() => setActiveTab('events')} 
+                        className="text-amber-600 hover:text-amber-800 text-sm mt-2 flex items-center"
+                      >
+                        View all events ({userData.events.split(/\\n/).filter(item => item.trim().length > 0).length - 3} more)
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-amber-900">No event information available</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
           
           {userData && activeTab === 'patents' && (
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
-              <h2 className="text-2xl font-bold text-amber-900 mb-6">Your Patents</h2>
-              <div className="p-4 bg-amber-50 rounded-lg whitespace-pre-line">
-              <p className="text-amber-900 whitespace-pre-line">
-              {userData?.patents || "No patent information available"}</p>
-              </div>
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
+            <h2 className="text-2xl font-bold text-amber-900 mb-6">Your Patents</h2>
+            <div className="p-6 bg-amber-50 rounded-lg">
+              {userData?.patents ? (
+                <div className="space-y-4">
+                  {userData.patents
+                    .split(/\\n/) 
+                    .filter(item => item.trim().length > 0)
+                    .map((patent, index) => (
+                      <div key={index} className="p-4 bg-white rounded-lg shadow-sm border border-amber-100">
+                        <p className="text-amber-900">
+                          {patent.trim()}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <p className="text-amber-900">No patent information available</p>
+              )}
             </div>
-          )}
+          </div>
+        )}
           
           {userData && activeTab === 'publications' && (
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
-              <h2 className="text-2xl font-bold text-amber-900 mb-6">Your Publications</h2>
-              <div className="p-4 bg-amber-50 rounded-lg whitespace-pre-line">
-              <p className="text-amber-900 whitespace-pre-line">
-                {userData?.publications || "No publication information available"}</p>
-              </div>
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
+            <h2 className="text-2xl font-bold text-amber-900 mb-6">Your Publications</h2>
+            <div className="p-6 bg-amber-50 rounded-lg">
+              {userData?.publications ? (
+                <div className="space-y-4">
+                  {userData.publications
+                    .split(/\\n/) 
+                    .filter(item => item.trim().length > 0)
+                    .map((publication, index) => (
+                      <div key={index} className="p-4 bg-white rounded-lg shadow-sm border border-amber-100">
+                        <p className="text-amber-900">
+                          {publication.trim()}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <p className="text-amber-900">No publication information available</p>
+              )}
             </div>
-          )}
+          </div>
+        )}
           
           {userData && activeTab === 'conferences' && (
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
-              <h2 className="text-2xl font-bold text-amber-900 mb-6">Your Conferences</h2>
-              <div className="p-4 bg-amber-50 rounded-lg whitespace-pre-line">
-              <p className="text-amber-900 whitespace-pre-line">
-              {userData?.conferences || "No conference information available"}</p>
-              </div>
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
+            <h2 className="text-2xl font-bold text-amber-900 mb-6">Your Conferences</h2>
+            <div className="p-6 bg-amber-50 rounded-lg">
+              {userData?.conferences ? (
+                <div className="space-y-4">
+                  {userData.conferences
+                    .split(/\\n/) 
+                    .filter(item => item.trim().length > 0)
+                    .map((conference, index) => (
+                      <div key={index} className="p-4 bg-white rounded-lg shadow-sm border border-amber-100">
+                        <p className="text-amber-900">
+                          {conference.trim()}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <p className="text-amber-900">No conference information available</p>
+              )}
             </div>
-          )}
+          </div>
+        )}
           
           {userData && activeTab === 'events' && (
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
-              <h2 className="text-2xl font-bold text-amber-900 mb-6">Your Events</h2>
-              <div className="p-4 bg-amber-50 rounded-lg whitespace-pre-line">
-              <p className="text-amber-900 whitespace-pre-line">
-              {userData?.events || "No event information available"}</p>
-              </div>
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
+            <h2 className="text-2xl font-bold text-amber-900 mb-6">Your Events</h2>
+            <div className="p-6 bg-amber-50 rounded-lg">
+              {userData?.events ? (
+                <div className="space-y-4">
+                  {userData.events
+                    .split(/\\n/) 
+                    .filter(item => item.trim().length > 0)
+                    .map((event, index) => (
+                      <div key={index} className="p-4 bg-white rounded-lg shadow-sm border border-amber-100">
+                        <p className="text-amber-900">
+                          {event.trim()}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <p className="text-amber-900">No event information available</p>
+              )}
             </div>
-          )}
+          </div>
+        )}
         </div>
       </main>
     </div>

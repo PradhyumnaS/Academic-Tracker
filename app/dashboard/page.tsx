@@ -111,7 +111,7 @@ const Dashboard = () => {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <Link href="/" className="flex-shrink-0 flex items-center">
-                <span className="font-bold text-xl text-amber-900">ContributionTracker</span>
+                <span className="font-bold text-xl text-amber-900">Academic Tracker</span>
               </Link>
             </div>
             

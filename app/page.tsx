@@ -52,7 +52,7 @@ export default function Home() {
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center">
               <Link href="/" className="font-bold text-xl text-amber-900">
-                ContributionTracker
+                Academic Tracker
               </Link>
             </div>
             
@@ -208,17 +208,17 @@ export default function Home() {
             {[
               {
                 quote: "This platform completely transformed how I organize my research output. Everything is now beautifully documented.",
-                author: "Dr. Sarah Chen",
+                author: "Prof. Navneet Satwik",
                 role: "Professor of Computer Science"
               },
               {
                 quote: "The ability to track all my patents and publications in one place has been invaluable for my tenure application.",
-                author: "Dr. Michael Rodriguez",
+                author: "Prof. Prajwal Udupa",
                 role: "Associate Professor of Engineering"
               },
               {
                 quote: "I can now generate reports of my academic contributions in seconds. This used to take me days to compile manually.",
-                author: "Dr. Aisha Patel",
+                author: "Prof. Rohith B N",
                 role: "Research Scientist"
               }
             ].map((testimonial, index) => (
@@ -261,7 +261,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-xl font-bold text-amber-100 mb-4">Contribution Tracker</h3>
+              <h3 className="text-xl font-bold text-amber-100 mb-4">Academic Tracker</h3>
               <p className="mb-4">Track, manage, and showcase your academic contributions in one beautiful platform.</p>
             </div>
             
@@ -296,7 +296,7 @@ export default function Home() {
           </div>
           
           <div className="border-t border-amber-800/30 mt-12 pt-8 text-center">
-            <p>&copy; {new Date().getFullYear()} Contribution Tracker. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Academic Tracker. All rights reserved.</p>
           </div>
         </div>
       </footer>

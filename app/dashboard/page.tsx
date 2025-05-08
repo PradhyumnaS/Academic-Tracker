@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { Award, BookOpen, Calendar, LogOut, RefreshCw, Search, User, Users } from 'lucide-react';
 import Link from 'next/link';
 
@@ -89,6 +89,45 @@ const Dashboard = () => {
       router.push('/');
     } catch (error) {
       console.error("Error signing out:", error);
+    }
+  };
+
+  const [newEntry, setNewEntry] = useState('');
+  const [adding, setAdding] = useState(false);
+
+  const handleAddEntry = async (field: keyof UserData) => {
+    if (!user?.email || !newEntry.trim()) return;
+    setAdding(true);
+    try {
+      const docRef = doc(db, "contribution", user.email);
+      const prev = userData?.[field] || '';
+      // Always append a \n to the new entry
+      const entryToAdd = newEntry.trim() + '\\n';
+      const updated = prev ? prev + entryToAdd : entryToAdd;
+      await updateDoc(docRef, { [field]: updated });
+      await fetchUserContributions(user.email);
+      setNewEntry('');
+    } catch (err) {
+      console.error("Error adding entry:", err);
+    }
+    setAdding(false);
+  };
+  
+  const handleDeleteEntry = async (field: keyof UserData, index: number) => {
+    if (!user?.email) return;
+    try {
+      const prev = userData?.[field] || '';
+      // Split by \n, but keep empty strings for trailing \n
+      const items = prev.split('\n').filter((_, i, arr) => i < arr.length - 1);
+      // Remove the entry at the given index
+      items.splice(index, 1);
+      // Join and always end with a \n if there are any items left
+      const updated = items.length > 0 ? items.join('\n') + '\n' : '';
+      const docRef = doc(db, "contribution", user.email);
+      await updateDoc(docRef, { [field]: updated });
+      await fetchUserContributions(user.email);
+    } catch (err) {
+      console.error("Error deleting entry:", err);
     }
   };
 
@@ -371,6 +410,22 @@ const Dashboard = () => {
           {userData && activeTab === 'patents' && (
           <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
             <h2 className="text-2xl font-bold text-amber-900 mb-6">Your Patents</h2>
+            <div className="flex mb-4 gap-2">
+              <input
+                type="text"
+                value={newEntry}
+                onChange={e => setNewEntry(e.target.value)}
+                placeholder="Add new patent"
+                className="flex-1 border border-amber-200 rounded-lg px-3 py-2 text-black"
+              />
+              <button
+                onClick={() => handleAddEntry('patents')}
+                disabled={adding}
+                className="bg-amber-700 text-white px-4 py-2 rounded-lg hover:bg-amber-800"
+              >
+                Add
+              </button>
+            </div>
             <div className="p-6 bg-amber-50 rounded-lg">
               {userData?.patents ? (
                 <div className="space-y-4">
@@ -382,6 +437,13 @@ const Dashboard = () => {
                         <p className="text-amber-900">
                           {patent.trim()}
                         </p>
+                        <button
+                  onClick={() => handleDeleteEntry('patents', index)}
+                  className="text-red-500 hover:text-red-700 ml-4"
+                  title="Delete"
+                >
+                  Delete
+                </button>
                       </div>
                     ))}
                 </div>
@@ -395,6 +457,22 @@ const Dashboard = () => {
           {userData && activeTab === 'publications' && (
           <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
             <h2 className="text-2xl font-bold text-amber-900 mb-6">Your Publications</h2>
+            <div className="flex mb-4 gap-2">
+              <input
+                type="text"
+                value={newEntry}
+                onChange={e => setNewEntry(e.target.value)}
+                placeholder="Add new publication"
+                className="flex-1 border border-amber-200 rounded-lg px-3 py-2 text-black"
+              />
+              <button
+                onClick={() => handleAddEntry('publications')}
+                disabled={adding}
+                className="bg-amber-700 text-white px-4 py-2 rounded-lg hover:bg-amber-800"
+              >
+                Add
+              </button>
+            </div>
             <div className="p-6 bg-amber-50 rounded-lg">
               {userData?.publications ? (
                 <div className="space-y-4">
@@ -406,6 +484,13 @@ const Dashboard = () => {
                         <p className="text-amber-900">
                           {publication.trim()}
                         </p>
+                        <button
+                  onClick={() => handleDeleteEntry('publications', index)}
+                  className="text-red-500 hover:text-red-700 ml-4"
+                  title="Delete"
+                >
+                  Delete
+                </button>
                       </div>
                     ))}
                 </div>
@@ -419,6 +504,22 @@ const Dashboard = () => {
           {userData && activeTab === 'conferences' && (
           <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
             <h2 className="text-2xl font-bold text-amber-900 mb-6">Your Conferences</h2>
+            <div className="flex mb-4 gap-2">
+              <input
+                type="text"
+                value={newEntry}
+                onChange={e => setNewEntry(e.target.value)}
+                placeholder="Add new conference"
+                className="flex-1 border border-amber-200 rounded-lg px-3 py-2 text-black"
+              />
+              <button
+                onClick={() => handleAddEntry('conferences')}
+                disabled={adding}
+                className="bg-amber-700 text-white px-4 py-2 rounded-lg hover:bg-amber-800"
+              >
+                Add
+              </button>
+            </div>
             <div className="p-6 bg-amber-50 rounded-lg">
               {userData?.conferences ? (
                 <div className="space-y-4">
@@ -430,6 +531,13 @@ const Dashboard = () => {
                         <p className="text-amber-900">
                           {conference.trim()}
                         </p>
+                        <button
+                  onClick={() => handleDeleteEntry('conferences', index)}
+                  className="text-red-500 hover:text-red-700 ml-4"
+                  title="Delete"
+                >
+                  Delete
+                </button>
                       </div>
                     ))}
                 </div>
@@ -443,6 +551,22 @@ const Dashboard = () => {
           {userData && activeTab === 'events' && (
           <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100">
             <h2 className="text-2xl font-bold text-amber-900 mb-6">Your Events</h2>
+            <div className="flex mb-4 gap-2">
+              <input
+                type="text"
+                value={newEntry}
+                onChange={e => setNewEntry(e.target.value)}
+                placeholder="Add new event"
+                className="flex-1 border border-amber-200 rounded-lg px-3 py-2 text-black"
+              />
+              <button
+                onClick={() => handleAddEntry('events')}
+                disabled={adding}
+                className="bg-amber-700 text-white px-4 py-2 rounded-lg hover:bg-amber-800"
+              >
+                Add
+              </button>
+            </div>
             <div className="p-6 bg-amber-50 rounded-lg">
               {userData?.events ? (
                 <div className="space-y-4">
@@ -454,6 +578,13 @@ const Dashboard = () => {
                         <p className="text-amber-900">
                           {event.trim()}
                         </p>
+                        <button
+                  onClick={() => handleDeleteEntry('events', index)}
+                  className="text-red-500 hover:text-red-700 ml-4"
+                  title="Delete"
+                >
+                  Delete
+                </button>
                       </div>
                     ))}
                 </div>
